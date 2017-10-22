@@ -12,5 +12,6 @@
     <modules>
         <module>core</module>
         <module>restee4jtestapi</module>
+        <module>commons</module>
     </modules>
 </project>

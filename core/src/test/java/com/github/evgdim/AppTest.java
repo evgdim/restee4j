@@ -32,4 +32,11 @@ public class AppTest {
         assertThat("status", clientResponse.getStatus() == 200);
         assertThat(clientResponse.getEntity(String.class), not(isEmptyOrNullString()));
     }
+
+    @Test
+    public void testNotFound() throws IOException {
+        ClientResponse clientResponse = client.get("/people/999", new MultivaluedMapImpl());
+        assertThat("status", clientResponse.getStatus() == 404);
+        assertThat(clientResponse.getEntity(String.class), not(isEmptyOrNullString()));
+    }
 }
