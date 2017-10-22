@@ -11,7 +11,7 @@
   <url>http://maven.apache.org</url>
   <parent>
     <groupId>com.github.evgdim</groupId>
-    <artifactId>parent</artifactId>
+    <artifactId>restee4j</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
