@@ -1,4 +1,4 @@
-package com.github.evgdim;
+package com.github.evgdim.restee4j;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
