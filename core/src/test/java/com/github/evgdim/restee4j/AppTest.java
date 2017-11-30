@@ -16,7 +16,7 @@ import org.junit.Test;
 
 public class AppTest {
 	@Test
-	public void testCache() throws ClientProtocolException, IOException {
+	public void testHttpClient() throws ClientProtocolException, IOException {
 		CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
 		CloseableHttpResponse httpResponse = mock(CloseableHttpResponse.class);
 		StatusLine statusLine = mock(StatusLine.class);
@@ -27,5 +27,21 @@ public class AppTest {
 		
 		assertEquals(200, httpClient.execute(new HttpGet()).getStatusLine().getStatusCode());
 		assertEquals(500, httpClient.execute(new HttpGet()).getStatusLine().getStatusCode());
+	}
+	
+	@Test
+	public void testCache() throws ClientProtocolException, IOException {
+		CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
+		CloseableHttpResponse httpResponse = mock(CloseableHttpResponse.class);
+		StatusLine statusLine = mock(StatusLine.class);
+		
+		when(httpResponse.getStatusLine()).thenReturn(statusLine);
+		when(statusLine.getStatusCode()).thenReturn(200).thenReturn(500); 
+		when(httpClient.execute(anyObject())).thenReturn(httpResponse);
+		
+		Restee4jClient client = new Restee4jClient(httpClient);
+		
+		assertEquals(200, client.execute(new HttpGet()).getStatusLine().getStatusCode());
+		assertEquals(200, client.execute(new HttpGet()).getStatusLine().getStatusCode());
 	}
 }

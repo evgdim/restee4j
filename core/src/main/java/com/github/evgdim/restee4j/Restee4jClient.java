@@ -19,7 +19,7 @@ public class Restee4jClient {
 		requestsCache = Caffeine.newBuilder()
 			    .maximumSize(10_000)
 			    .expireAfterWrite(5, TimeUnit.MINUTES)
-			    .refreshAfterWrite(1, TimeUnit.MINUTES)
+			    //.refreshAfterWrite(1, TimeUnit.MINUTES)
 			    .build();
 	}
 	
@@ -28,12 +28,13 @@ public class Restee4jClient {
 	}
 	
 	public CloseableHttpResponse execute(HttpUriRequest request) {
-		return requestsCache.get(request, req -> {
+		CloseableHttpResponse cachedResponse = requestsCache.get(request, req -> {
 			try {
 				return this.httpClient.execute(req);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		});
+		return cachedResponse;
 	}
 }
