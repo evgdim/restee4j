@@ -1,38 +1,39 @@
 package com.github.evgdim.restee4j;
 
-import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 
 public class Restee4jClient {
-	private final HttpClient httpClient;
-	private final ObjectMapper mapper;
+	private final CloseableHttpClient httpClient;
+	private final Cache<HttpUriRequest, CloseableHttpResponse> requestsCache;
 	
-	public Restee4jClient(HttpClient httpClient, ObjectMapper mapper) {
+	public Restee4jClient(CloseableHttpClient httpClient) {
 		this.httpClient = httpClient;
-		this.mapper = mapper;
+		requestsCache = Caffeine.newBuilder()
+			    .maximumSize(10_000)
+			    .expireAfterWrite(5, TimeUnit.MINUTES)
+			    .refreshAfterWrite(1, TimeUnit.MINUTES)
+			    .build();
 	}
 	
 	public Restee4jClient() {
-		this(new HttpClient(), new ObjectMapper());
+		this(HttpClients.createDefault());
 	}
 	
-	public Response<?> getJson(String uri, Class<?> clazz){
-		HttpMethod getMethod = new GetMethod(uri);
-		int httpCode = -1;
-		try {
-			httpCode = this.httpClient.executeMethod(getMethod);
-			InputStream responseBodyStream = getMethod.getResponseBodyAsStream();
-			Object readValue = mapper.readValue(responseBodyStream, clazz);
-			return new Response<>(httpCode, clazz.cast(readValue), null); 
-		} catch (Exception e) {
-			return new Response<String>(httpCode, e.getMessage(), null);
-		} finally {
-			getMethod.releaseConnection();
-		}
+	public CloseableHttpResponse execute(HttpUriRequest request) {
+		return requestsCache.get(request, req -> {
+			try {
+				return this.httpClient.execute(req);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
 	}
 }
