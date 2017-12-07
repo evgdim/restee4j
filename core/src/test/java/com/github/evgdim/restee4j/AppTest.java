@@ -30,19 +30,13 @@ public class AppTest {
 	}
 	
 	@Test
-	public void testHystrix() throws ClientProtocolException, IOException {
-		CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
-		CloseableHttpResponse httpResponse = mock(CloseableHttpResponse.class);
-		StatusLine statusLine = mock(StatusLine.class);
+	public void testBuild() throws ClientProtocolException, IOException {
+		Restee4jClient restee4jClient = Restee4jClient.Restee4jClientBuilder.create()
+			.basicAuthentication("asd", "asd")
+			.build();
 		
-		when(httpResponse.getStatusLine()).thenReturn(statusLine);
-		when(statusLine.getStatusCode())
-			.thenReturn(200)
-			.thenThrow(new RuntimeException("Test exception"))
-			.thenReturn(200); 
-		when(httpClient.execute(anyObject())).thenReturn(httpResponse);
-		
-		assertEquals(200, httpClient.execute(new HttpGet()).getStatusLine().getStatusCode());
-		assertEquals(500, httpClient.execute(new HttpGet()).getStatusLine().getStatusCode());
+		restee4jClient.execute(new HttpGet("https://www.google.bg")); 
 	}
+	
+	
 }
