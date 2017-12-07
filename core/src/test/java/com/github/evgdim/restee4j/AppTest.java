@@ -31,12 +31,35 @@ public class AppTest {
 	
 	@Test
 	public void testBuild() throws ClientProtocolException, IOException {
-		Restee4jClient restee4jClient = Restee4jClient.Restee4jClientBuilder.create()
+		Restee4jClient restee4jClient = Restee4jClient.Restee4jClientBuilder.create(10_000, 10_000, 10_000)
 			.basicAuthentication("asd", "asd")
+			.cirquitBreaker("test")
 			.build();
-		
-		restee4jClient.execute(new HttpGet("https://www.google.bg")); 
+		try {
+			CloseableHttpResponse response = restee4jClient.execute(new HttpGet("http://www.google.bga"));
+			System.out.println(response);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		try {
+			CloseableHttpResponse response = restee4jClient.execute(new HttpGet("http://www.google.bga"));
+			System.out.println(response);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		try {
+			CloseableHttpResponse response = restee4jClient.execute(new HttpGet("http://www.google.bga"));
+			System.out.println(response);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 	}
 	
-	
+	@Test
+	public void testBuildEmpty() throws ClientProtocolException, IOException {
+		Restee4jClient restee4jClient = Restee4jClient.Restee4jClientBuilder.create(10_000, 10_000, 10_000)
+			.build();
+			CloseableHttpResponse response = restee4jClient.execute(new HttpGet("http://www.google.bg"));	
+			System.out.println(response);
+	}
 }

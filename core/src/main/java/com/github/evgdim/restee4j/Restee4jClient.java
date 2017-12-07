@@ -9,7 +9,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 import com.github.evgdim.restee4j.decorator.BasicAuthenticationDecorator;
+import com.github.evgdim.restee4j.decorator.EmptyDecorator;
 import com.github.evgdim.restee4j.decorator.HttpClientDecorator;
+import com.github.evgdim.restee4j.decorator.HystrixDecorator;
 
 public class Restee4jClient {
 	private final HttpClientDecorator decorator;
@@ -55,7 +57,20 @@ public class Restee4jClient {
 			return this;
 		}
 		
+		public Restee4jClientBuilder cirquitBreaker(String groupKey) {
+			if(this.decorator == null) {
+				this.decorator = new HystrixDecorator(httpClient, groupKey);
+			} else {
+				HystrixDecorator hystrixDecorator = new HystrixDecorator(decorator, groupKey);
+				this.decorator = hystrixDecorator;
+			}
+			return this;
+		}
+		
 		public Restee4jClient build() {
+			if(decorator == null) {
+				decorator = new EmptyDecorator(httpClient);
+			}
 			return new Restee4jClient(decorator);
 		}
 	}

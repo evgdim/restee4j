@@ -26,7 +26,10 @@ public abstract class HttpClientDecorator {
 	}
 
 	public CloseableHttpClient getHttpClient() {
-		return httpClient;
+		if(this.httpClient != null) {
+			return this.httpClient;
+		}
+		return this.child.getHttpClient();
 	}
 	
 	
