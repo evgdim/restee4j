@@ -26,7 +26,7 @@ public class GetRequestCachingDecorator extends HttpClientDecorator {
 	@Override
 	public CloseableHttpResponse execute(HttpUriRequest request) throws IOException {
 		if(request instanceof HttpGet) {
-			//TODO
+			HttpGet getRequest = (HttpGet) request;
 		}
 		if(this.child != null) {
 			return this.child.execute(request);
