@@ -31,21 +31,26 @@ public class Restee4jClient {
 			this.httpClient = httpClient;
 		}
 		
-		public static Restee4jClientBuilder create(int connectTimeout, int connectionRequestTimeout, int socketTimeout) {
-			RequestConfig requestConfig = RequestConfig.custom().
-					  setConnectTimeout(connectTimeout).
-					  setConnectionRequestTimeout(connectionRequestTimeout).
-					  setSocketTimeout(socketTimeout)
-					  .build();
-			CloseableHttpClient httpClient = HttpClients.custom()
-					.setDefaultRequestConfig(requestConfig)
-					.build();
+		public static Restee4jClientBuilder create(CloseableHttpClient httpClient, int connectTimeout, int connectionRequestTimeout, int socketTimeout) {
 			return new Restee4jClientBuilder(httpClient);
 		}
 		
-		public static Restee4jClientBuilder create() {
-			return create(3000, 3000, 3000);
+		public static Restee4jClientBuilder create(CloseableHttpClient httpClient) {
+			return create(httpClient,3000, 3000, 3000);
 		}
+		
+		public static Restee4jClientBuilder create() {
+			RequestConfig requestConfig = RequestConfig.custom().
+					setConnectTimeout(3000).
+					setConnectionRequestTimeout(3000).
+					setSocketTimeout(3000)
+					.build();
+			CloseableHttpClient httpClient = HttpClients.custom()
+					.setDefaultRequestConfig(requestConfig)
+					.build();
+			return create(httpClient);
+		}
+		
 		
 		public Restee4jClientBuilder basicAuthentication(String username, String password) {
 			if(this.decorator == null) {
